@@ -3,7 +3,11 @@ import SwiftData
 
 struct ClubsView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \Club.averageDistance, order: .reverse) private var clubs: [Club]
+    @Query private var clubs: [Club]
+    
+    var sortedClubs: [Club] {
+        clubs.sorted { ($0.averageDistance ?? 0) > ($1.averageDistance ?? 0) }
+    }
     
     @State private var showingAddClub = false
     
@@ -53,7 +57,7 @@ struct ClubsView: View {
                         .padding(.horizontal, 30)
                         .padding(.top, 24)
                         
-                        ForEach(clubs) { club in
+                        ForEach(sortedClubs) { club in
                             ClubCard(
                                 title: club.name,
                                 distance: club.averageDistance != nil ? "\(Int(club.averageDistance!)) yds" : "--- yds"
@@ -88,6 +92,8 @@ struct ClubsView: View {
         for club in defaultClubs {
             modelContext.insert(club)
         }
+        
+        try? modelContext.save()
     }
 }
 
