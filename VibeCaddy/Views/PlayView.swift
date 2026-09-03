@@ -10,10 +10,25 @@ struct PlayView: View {
             bgDark.ignoresSafeArea()
             
             VStack(spacing: 24) {
-                Text("Ready to Play?")
-                    .font(.system(.title, design: .monospaced).bold())
-                    .foregroundColor(textBeige)
-                    .padding(.top, 20)
+                HStack {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Image(systemName: "seal.fill")
+                            .font(.title2)
+                            .foregroundColor(textBeige)
+                            .padding(.bottom, 8)
+                        
+                        Text("Hello Jonathan")
+                            .font(.system(.title, design: .monospaced).bold())
+                            .foregroundColor(textBeige)
+                        
+                        Text("Ready to play?")
+                            .font(.system(.subheadline, design: .monospaced))
+                            .foregroundColor(textBeige.opacity(0.7))
+                    }
+                    Spacer()
+                }
+                .padding(.horizontal, 30)
+                .padding(.top, 40)
                 
                 // Map encased in a container
                 Map()
@@ -43,7 +58,7 @@ struct PlayView: View {
                         .padding(.vertical, 16)
                         .background(textBeige)
                         .cornerRadius(12)
-                        .padding(.horizontal, 50)
+                        .padding(.horizontal, 30)
                 }
                 
                 Spacer(minLength: 20)

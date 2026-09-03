@@ -11,13 +11,19 @@ struct ClubsView: View {
             ScrollView {
                 VStack(spacing: 20) {
                     HStack {
-                        Text("Inventory")
-                            .font(.system(.largeTitle, design: .monospaced).bold())
-                            .foregroundColor(textBeige)
+                        VStack(alignment: .leading, spacing: 12) {
+                            Image(systemName: "seal.fill")
+                                .font(.title2)
+                                .foregroundColor(textBeige)
+                            
+                            Text("Inventory")
+                                .font(.system(.largeTitle, design: .monospaced).bold())
+                                .foregroundColor(textBeige)
+                        }
                         Spacer()
                     }
-                    .padding(.horizontal, 24)
-                    .padding(.top, 20)
+                    .padding(.horizontal, 30)
+                    .padding(.top, 40)
                     
                     ClubCard(title: "Driver", distance: "250 yds")
                     ClubCard(title: "7 Iron", distance: "165 yds")
@@ -60,7 +66,7 @@ struct ClubCard: View {
             RoundedRectangle(cornerRadius: 12)
                 .stroke(textBeige.opacity(0.2), lineWidth: 1)
         )
-        .padding(.horizontal, 24)
+        .padding(.horizontal, 30)
     }
 }
 

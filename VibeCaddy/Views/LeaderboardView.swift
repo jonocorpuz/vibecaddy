@@ -8,9 +8,24 @@ struct LeaderboardView: View {
         ZStack {
             bgDark.ignoresSafeArea()
             
-            Text("Rankings")
-                .font(.system(.largeTitle, design: .monospaced).bold())
-                .foregroundColor(textBeige)
+            VStack {
+                HStack {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Image(systemName: "seal.fill")
+                            .font(.title2)
+                            .foregroundColor(textBeige)
+                        
+                        Text("Rankings")
+                            .font(.system(.largeTitle, design: .monospaced).bold())
+                            .foregroundColor(textBeige)
+                    }
+                    Spacer()
+                }
+                .padding(.horizontal, 30)
+                .padding(.top, 40)
+                
+                Spacer()
+            }
         }
     }
 }
