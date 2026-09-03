@@ -11,12 +11,16 @@ struct PlayView: View {
             
             VStack(spacing: 24) {
                 HStack {
+                    Image(systemName: "seal.fill")
+                        .font(.title2)
+                        .foregroundColor(textBeige)
+                    Spacer()
+                }
+                .padding(.horizontal, 30)
+                .padding(.top, 16)
+                
+                HStack {
                     VStack(alignment: .leading, spacing: 6) {
-                        Image(systemName: "seal.fill")
-                            .font(.title2)
-                            .foregroundColor(textBeige)
-                            .padding(.bottom, 8)
-                        
                         Text("Hello Jonathan")
                             .font(.system(.title, design: .monospaced).bold())
                             .foregroundColor(textBeige)
@@ -28,7 +32,6 @@ struct PlayView: View {
                     Spacer()
                 }
                 .padding(.horizontal, 30)
-                .padding(.top, 40)
                 
                 // Map encased in a container
                 Map()

@@ -8,22 +8,26 @@ struct ClubsView: View {
         ZStack {
             bgDark.ignoresSafeArea()
             
-            ScrollView {
-                VStack(spacing: 20) {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Image(systemName: "seal.fill")
-                                .font(.title2)
-                                .foregroundColor(textBeige)
-                            
+            VStack(spacing: 0) {
+                HStack {
+                    Image(systemName: "seal.fill")
+                        .font(.title2)
+                        .foregroundColor(textBeige)
+                    Spacer()
+                }
+                .padding(.horizontal, 30)
+                .padding(.top, 16)
+                
+                ScrollView {
+                    VStack(spacing: 20) {
+                        HStack {
                             Text("Inventory")
                                 .font(.system(.largeTitle, design: .monospaced).bold())
                                 .foregroundColor(textBeige)
+                            Spacer()
                         }
-                        Spacer()
-                    }
-                    .padding(.horizontal, 30)
-                    .padding(.top, 40)
+                        .padding(.horizontal, 30)
+                        .padding(.top, 24)
                     
                     ClubCard(title: "Driver", distance: "250 yds")
                     ClubCard(title: "7 Iron", distance: "165 yds")
