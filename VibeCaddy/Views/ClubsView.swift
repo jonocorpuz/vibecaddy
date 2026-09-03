@@ -51,6 +51,7 @@ struct ClubsView: View {
         }
     }
 }
+}
 
 struct ClubCard: View {
     let title: String
