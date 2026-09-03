@@ -5,10 +5,6 @@ struct ClubsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var clubs: [Club]
     
-    var sortedClubs: [Club] {
-        clubs.sorted { ($0.averageDistance ?? 0) > ($1.averageDistance ?? 0) }
-    }
-    
     @State private var showingAddClub = false
     
     let bgDark = Color(red: 0.10, green: 0.08, blue: 0.07)
@@ -21,10 +17,6 @@ struct ClubsView: View {
             
             VStack(spacing: 0) {
                 HStack {
-                    Image(systemName: "seal.fill")
-                        .font(.title2)
-                        .foregroundColor(textBeige)
-                    
                     Spacer()
                     
                     Image(systemName: "person.fill")
@@ -57,7 +49,7 @@ struct ClubsView: View {
                         .padding(.horizontal, 30)
                         .padding(.top, 24)
                         
-                        ForEach(sortedClubs) { club in
+                        ForEach(clubs.sorted(by: { ($0.averageDistance ?? 0) > ($1.averageDistance ?? 0) })) { club in
                             ClubCard(
                                 title: club.name,
                                 distance: club.averageDistance != nil ? "\(Int(club.averageDistance!)) yds" : "--- yds"
@@ -77,8 +69,6 @@ struct ClubsView: View {
     }
     
     private func seedDataIfNeeded() {
-        guard clubs.isEmpty else { return }
-        
         let defaultClubs = [
             Club(name: "Driver", type: "Wood", averageDistance: 230),
             Club(name: "7 Wood", type: "Wood", averageDistance: 190),
@@ -89,11 +79,19 @@ struct ClubsView: View {
             Club(name: "54° Sand Wedge", type: "Wedge", averageDistance: 95)
         ]
         
-        for club in defaultClubs {
-            modelContext.insert(club)
+        let existingNames = Set(clubs.map { $0.name })
+        var didInsert = false
+        
+        for defaultClub in defaultClubs {
+            if !existingNames.contains(defaultClub.name) {
+                modelContext.insert(defaultClub)
+                didInsert = true
+            }
         }
         
-        try? modelContext.save()
+        if didInsert {
+            try? modelContext.save()
+        }
     }
 }
 
@@ -159,6 +157,7 @@ struct AddClubView: View {
         let dist = Double(distance)
         let newClub = Club(name: name, type: "Custom", averageDistance: dist)
         modelContext.insert(newClub)
+        try? modelContext.save()
         dismiss()
     }
 }

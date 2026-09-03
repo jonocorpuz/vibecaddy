@@ -12,10 +12,6 @@ struct PlayView: View {
             
             VStack(spacing: 24) {
                 HStack {
-                    Image(systemName: "seal.fill")
-                        .font(.title2)
-                        .foregroundColor(textBeige)
-                    
                     Spacer()
                     
                     Image(systemName: "person.fill")
