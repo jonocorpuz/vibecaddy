@@ -12,7 +12,12 @@ import SwiftData
 struct VibeCaddyApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            Player.self,
+            Club.self,
+            Course.self,
+            Hole.self,
+            Round.self,
+            Shot.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
