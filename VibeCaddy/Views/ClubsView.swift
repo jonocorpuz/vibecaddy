@@ -1,26 +1,29 @@
 import SwiftUI
 
 struct ClubsView: View {
+    let bgDark = Color(red: 0.10, green: 0.08, blue: 0.07)
+    let textBeige = Color(red: 0.86, green: 0.81, blue: 0.71)
+    
     var body: some View {
         ZStack {
-            Color(white: 0.08).ignoresSafeArea()
+            bgDark.ignoresSafeArea()
             
             ScrollView {
-                VStack(spacing: 16) {
+                VStack(spacing: 20) {
                     HStack {
-                        Text("My Clubs")
-                            .font(.largeTitle.bold())
-                            .foregroundColor(.white)
+                        Text("Inventory")
+                            .font(.system(.largeTitle, design: .monospaced).bold())
+                            .foregroundColor(textBeige)
                         Spacer()
                     }
-                    .padding(.horizontal)
-                    .padding(.top)
+                    .padding(.horizontal, 24)
+                    .padding(.top, 20)
                     
-                    ClubCard(title: "Driver", distance: "250 yds", color: Color(red: 0.8, green: 0.95, blue: 0.9))
-                    ClubCard(title: "7 Iron", distance: "165 yds", color: Color(red: 0.95, green: 0.85, blue: 0.9))
-                    ClubCard(title: "Putter", distance: "N/A", color: Color(red: 0.95, green: 0.9, blue: 0.8))
+                    ClubCard(title: "Driver", distance: "250 yds")
+                    ClubCard(title: "7 Iron", distance: "165 yds")
+                    ClubCard(title: "Putter", distance: "--- yds")
                 }
-                .padding(.bottom, 24)
+                .padding(.bottom, 30)
             }
         }
     }
@@ -29,33 +32,35 @@ struct ClubsView: View {
 struct ClubCard: View {
     let title: String
     let distance: String
-    let color: Color
+    
+    let cardDark = Color(red: 0.14, green: 0.12, blue: 0.11)
+    let textBeige = Color(red: 0.86, green: 0.81, blue: 0.71)
     
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 8) {
                 Text(title)
-                    .font(.headline)
-                    .foregroundColor(.black)
+                    .font(.system(.headline, design: .monospaced))
+                    .foregroundColor(textBeige)
                 
                 Text(distance)
-                    .font(.subheadline)
-                    .foregroundColor(.black.opacity(0.7))
+                    .font(.system(.subheadline, design: .monospaced))
+                    .foregroundColor(textBeige.opacity(0.7))
             }
             Spacer()
             
-            Circle()
-                .fill(Color.white.opacity(0.3))
-                .frame(width: 44, height: 44)
-                .overlay(
-                    Image(systemName: "circle.grid.cross.fill")
-                        .foregroundColor(.black)
-                )
+            Image(systemName: "seal.fill")
+                .foregroundColor(textBeige)
+                .font(.title2)
         }
         .padding()
-        .background(color)
-        .cornerRadius(20)
-        .padding(.horizontal)
+        .background(cardDark)
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(textBeige.opacity(0.2), lineWidth: 1)
+        )
+        .padding(.horizontal, 24)
     }
 }
 

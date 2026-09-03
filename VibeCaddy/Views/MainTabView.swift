@@ -4,7 +4,8 @@ struct MainTabView: View {
     init() {
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor(white: 0.1, alpha: 1.0)
+        // Dark brown/black matching the theme
+        appearance.backgroundColor = UIColor(red: 0.10, green: 0.08, blue: 0.07, alpha: 1.0)
         
         UITabBar.appearance().standardAppearance = appearance
         UITabBar.appearance().scrollEdgeAppearance = appearance
@@ -14,21 +15,22 @@ struct MainTabView: View {
         TabView {
             ClubsView()
                 .tabItem {
-                    Label("Clubs", systemImage: "bag.fill")
+                    Label("Inventory", systemImage: "bag.fill")
                 }
             
             PlayView()
                 .tabItem {
-                    Label("Play", systemImage: "map.fill")
+                    Label("Map", systemImage: "map.fill")
                 }
             
             LeaderboardView()
                 .tabItem {
-                    Label("Leaderboard", systemImage: "trophy.fill")
+                    Label("Rankings", systemImage: "trophy.fill")
                 }
         }
         .preferredColorScheme(.dark)
-        .tint(Color(red: 0.8, green: 0.95, blue: 0.9))
+        // Muted beige/gold tint for active tabs
+        .tint(Color(red: 0.86, green: 0.81, blue: 0.71))
     }
 }
 
