@@ -8,11 +8,13 @@ final class Club {
     var type: String
     var averageDistance: Double?
     var player: Player?
+    var blockCategory: String?
     
-    init(id: UUID = UUID(), name: String, type: String, averageDistance: Double? = nil) {
+    init(id: UUID = UUID(), name: String, type: String, averageDistance: Double? = nil, blockCategory: String? = nil) {
         self.id = id
         self.name = name
         self.type = type
         self.averageDistance = averageDistance
+        self.blockCategory = blockCategory
     }
 }
