@@ -1,19 +1,19 @@
 import SwiftUI
 
-enum AppTab {
+import UIKit
+
+enum AppTab: String, CaseIterable {
     case clubs, play, leaderboard
 }
 
 struct MainTabView: View {
     @State private var selectedTab: AppTab = .play
-    
-    let bgDark = Color(red: 0.10, green: 0.08, blue: 0.07)
-    let cardDark = Color(red: 0.14, green: 0.12, blue: 0.11)
-    let textBeige = Color(red: 0.86, green: 0.81, blue: 0.71)
+    @Namespace private var tabNamespace
     
     var body: some View {
         ZStack {
-            bgDark.ignoresSafeArea()
+            NeoFuturisticTheme.voidBlack
+                .ignoresSafeArea()
             
             Group {
                 switch selectedTab {
@@ -33,29 +33,76 @@ struct MainTabView: View {
     }
     
     private var customNavBar: some View {
-        HStack {
-            Spacer()
-            TabBarButton(icon: "bag.fill", title: "INVENTORY", isSelected: selectedTab == .clubs) {
-                selectedTab = .clubs
+        HStack(spacing: 6) {
+            TabBarButton(
+                icon: "bag.fill",
+                title: "INVENTORY",
+                isSelected: selectedTab == .clubs,
+                identifier: "tab_inventory",
+                namespace: tabNamespace
+            ) {
+                let generator = UIImpactFeedbackGenerator(style: .light)
+                generator.impactOccurred()
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
+                    selectedTab = .clubs
+                }
             }
-            Spacer()
-            TabBarButton(icon: "map.fill", title: "PLAY", isSelected: selectedTab == .play) {
-                selectedTab = .play
+            
+            TabBarButton(
+                icon: "map.fill",
+                title: "PLAY",
+                isSelected: selectedTab == .play,
+                identifier: "tab_play",
+                namespace: tabNamespace
+            ) {
+                let generator = UIImpactFeedbackGenerator(style: .light)
+                generator.impactOccurred()
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
+                    selectedTab = .play
+                }
             }
-            Spacer()
-            TabBarButton(icon: "trophy.fill", title: "RANKINGS", isSelected: selectedTab == .leaderboard) {
-                selectedTab = .leaderboard
+            
+            TabBarButton(
+                icon: "trophy.fill",
+                title: "RANKINGS",
+                isSelected: selectedTab == .leaderboard,
+                identifier: "tab_rankings",
+                namespace: tabNamespace
+            ) {
+                let generator = UIImpactFeedbackGenerator(style: .light)
+                generator.impactOccurred()
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
+                    selectedTab = .leaderboard
+                }
             }
-            Spacer()
         }
-        .padding(.vertical, 16)
-        .background(cardDark)
-        .overlay(
-            Rectangle()
-                .frame(height: 1)
-                .foregroundColor(textBeige.opacity(0.15)),
-            alignment: .top
+        .padding(.horizontal, 8)
+        .padding(.vertical, 8)
+        .background(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .fill(.ultraThinMaterial)
         )
+        .background(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .fill(NeoFuturisticTheme.panelDark.opacity(0.85))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .stroke(
+                    LinearGradient(
+                        colors: [
+                            NeoFuturisticTheme.radianiteCyan.opacity(0.6),
+                            NeoFuturisticTheme.cyberGreen.opacity(0.5)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1.0
+                )
+                .shadow(color: NeoFuturisticTheme.radianiteCyan.opacity(0.3), radius: 8)
+        )
+        .padding(.horizontal, 20)
+        .padding(.bottom, 6)
     }
 }
 
@@ -63,20 +110,68 @@ struct TabBarButton: View {
     let icon: String
     let title: String
     let isSelected: Bool
+    var identifier: String = ""
+    var namespace: Namespace.ID? = nil
     let action: () -> Void
-    
-    let textBeige = Color(red: 0.86, green: 0.81, blue: 0.71)
     
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 6) {
+            VStack(spacing: 5) {
                 Image(systemName: icon)
-                    .font(.system(size: 22))
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundStyle(isSelected ? NeoFuturisticTheme.radianiteCyan : NeoFuturisticTheme.textSecondary)
+                    .shadow(
+                        color: isSelected ? NeoFuturisticTheme.radianiteCyan.opacity(0.85) : .clear,
+                        radius: 8
+                    )
+                
                 Text(title)
-                    .font(.system(size: 10, design: .monospaced).bold())
+                    .font(.system(size: 11, weight: .heavy, design: .monospaced))
+                    .hudTracking(1.2)
+                    .foregroundStyle(isSelected ? NeoFuturisticTheme.textPrimary : NeoFuturisticTheme.textSecondary.opacity(0.7))
             }
-            .foregroundColor(isSelected ? textBeige : textBeige.opacity(0.3))
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 10)
+            .background {
+                if isSelected {
+                    if let namespace = namespace {
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .fill(NeoFuturisticTheme.radianiteCyan.opacity(0.18))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                    .stroke(
+                                        LinearGradient(
+                                            colors: [NeoFuturisticTheme.radianiteCyan, NeoFuturisticTheme.cyberGreen],
+                                            startPoint: .leading,
+                                            endPoint: .trailing
+                                        ),
+                                        lineWidth: 1.5
+                                    )
+                                    .shadow(color: NeoFuturisticTheme.radianiteCyan.opacity(0.6), radius: 6)
+                            )
+                            .matchedGeometryEffect(id: "activeTabIndicator", in: namespace)
+                    } else {
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .fill(NeoFuturisticTheme.radianiteCyan.opacity(0.18))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                    .stroke(
+                                        LinearGradient(
+                                            colors: [NeoFuturisticTheme.radianiteCyan, NeoFuturisticTheme.cyberGreen],
+                                            startPoint: .leading,
+                                            endPoint: .trailing
+                                        ),
+                                        lineWidth: 1.5
+                                    )
+                                    .shadow(color: NeoFuturisticTheme.radianiteCyan.opacity(0.6), radius: 6)
+                            )
+                    }
+                }
+            }
+            .contentShape(Rectangle())
         }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier(identifier.isEmpty ? title.lowercased() : identifier)
     }
 }
 
