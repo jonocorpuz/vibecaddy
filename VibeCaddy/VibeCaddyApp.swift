@@ -10,9 +10,10 @@ import SwiftData
 
 @main
 struct VibeCaddyApp: App {
+    @State private var userViewModel = UserViewModel()
+
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Player.self,
             Club.self,
             Course.self,
             Hole.self,
@@ -31,6 +32,7 @@ struct VibeCaddyApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(userViewModel)
         }
         .modelContainer(sharedModelContainer)
     }

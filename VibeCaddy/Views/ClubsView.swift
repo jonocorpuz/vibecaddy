@@ -16,39 +16,11 @@ struct ClubGroup: Identifiable {
 struct ClubsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var clubs: [Club]
+    @State private var viewModel = ClubsViewModel()
     
     let bgDark = Color(red: 0.10, green: 0.08, blue: 0.07)
     let cardDark = Color(red: 0.14, green: 0.12, blue: 0.11)
     let textBeige = Color(red: 0.86, green: 0.81, blue: 0.71)
-    
-    var groupedClubs: [ClubGroup] {
-        let dict = Dictionary(grouping: clubs) { club in
-            ClubGroupKey(name: club.name, category: club.blockCategory ?? category(for: club.type))
-        }
-        
-        return dict.map { key, grouped in
-            ClubGroup(
-                name: key.name,
-                category: key.category,
-                clubs: grouped.sorted(by: { ($0.averageDistance ?? 0) > ($1.averageDistance ?? 0) })
-            )
-        }.sorted { g1, g2 in
-            let order = ["Driver": 0, "Fairway Woodss": 1, "Hybrid": 2, "Iron Set": 3, "Wedges": 4, "Putter": 5]
-            let o1 = order[g1.category] ?? 99
-            let o2 = order[g2.category] ?? 99
-            if o1 != o2 { return o1 < o2 }
-            return g1.name < g2.name
-        }
-    }
-    
-    private func category(for type: String) -> String {
-        if type == "Driver" || type == "Putter" { return type }
-        if type.hasSuffix("w") { return "Fairway Woodss" }
-        if type.hasSuffix("h") { return "Hybrid" }
-        if type.hasSuffix("i") { return "Iron Set" }
-        if ["PW", "GW", "SW", "LW"].contains(type) { return "Wedges" }
-        return "Club"
-    }
     
     var body: some View {
         NavigationStack {
@@ -80,7 +52,7 @@ struct ClubsView: View {
                                     .font(.system(.largeTitle, design: .monospaced).bold())
                                     .foregroundColor(textBeige)
                                 Spacer()
-                                NavigationLink(destination: AddBlockView().navigationBarBackButtonHidden(true)) {
+                                NavigationLink(destination: AddBlockView(viewModel: viewModel).navigationBarBackButtonHidden(true)) {
                                     Image(systemName: "plus")
                                         .font(.title2)
                                         .foregroundColor(textBeige)
@@ -89,8 +61,8 @@ struct ClubsView: View {
                             .padding(.horizontal, 30)
                             .padding(.top, 24)
                             
-                            ForEach(groupedClubs) { group in
-                                NavigationLink(destination: EditBlockView(group: group).navigationBarBackButtonHidden(true)) {
+                            ForEach(viewModel.groupClubs(clubs)) { group in
+                                NavigationLink(destination: EditBlockView(viewModel: viewModel, group: group).navigationBarBackButtonHidden(true)) {
                                     ClubBlockCard(
                                         name: group.name,
                                         category: group.category,
@@ -105,36 +77,8 @@ struct ClubsView: View {
                 }
             }
             .onAppear {
-                seedDataIfNeeded()
+                viewModel.seedDataIfNeeded(context: modelContext, currentClubs: clubs)
             }
-        }
-    }
-    
-    private func seedDataIfNeeded() {
-        let defaultClubs = [
-            Club(name: "Taylormade M4 9.5", type: "Driver", averageDistance: 250, blockCategory: "Driver"),
-            Club(name: "Callaway AI Smoke Max", type: "3w", averageDistance: 220, blockCategory: "Fairway Woodss"),
-            Club(name: "Taylormade M4", type: "3h", averageDistance: 200, blockCategory: "Hybrid"),
-            Club(name: "Titleist T300", type: "5i", averageDistance: 180, blockCategory: "Iron Set"),
-            Club(name: "Titleist T300", type: "7i", averageDistance: 155, blockCategory: "Iron Set"),
-            Club(name: "Titleist T300", type: "9i", averageDistance: 130, blockCategory: "Iron Set"),
-            Club(name: "Titleist Vokey SM10", type: "GW", averageDistance: 110, blockCategory: "Wedges"),
-            Club(name: "Titleist Vokey SM10", type: "SW", averageDistance: 95, blockCategory: "Wedges"),
-            Club(name: "LAB DF3i", type: "Putter", averageDistance: nil, blockCategory: "Putter")
-        ]
-        
-        let existingNames = Set(clubs.map { $0.name })
-        var didInsert = false
-        
-        for defaultClub in defaultClubs {
-            if !existingNames.contains(defaultClub.name) {
-                modelContext.insert(defaultClub)
-                didInsert = true
-            }
-        }
-        
-        if didInsert {
-            try? modelContext.save()
         }
     }
 }
@@ -142,6 +86,8 @@ struct ClubsView: View {
 struct AddBlockView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    
+    let viewModel: ClubsViewModel
     
     @State private var name: String = ""
     @State private var category: String = "Iron Set"
@@ -338,13 +284,7 @@ struct AddBlockView: View {
     }
     
     private func saveBlock() {
-        for clubType in selectedClubs {
-            let distString = yardages[clubType] ?? ""
-            let dist = Double(distString)
-            let newClub = Club(name: name, type: clubType, averageDistance: dist, blockCategory: category)
-            modelContext.insert(newClub)
-        }
-        try? modelContext.save()
+        viewModel.saveNewBlock(context: modelContext, name: name, category: category, selectedClubs: selectedClubs, yardages: yardages)
         dismiss()
     }
 }
@@ -404,13 +344,15 @@ struct EditBlockView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     
+    let viewModel: ClubsViewModel
     let originalGroup: ClubGroup
     
     @State private var name: String
     @State private var selectedClubs: Set<String>
     @State private var yardages: [String: String]
     
-    init(group: ClubGroup) {
+    init(viewModel: ClubsViewModel, group: ClubGroup) {
+        self.viewModel = viewModel
         self.originalGroup = group
         _name = State(initialValue: group.name)
         _selectedClubs = State(initialValue: Set(group.clubs.map { $0.type }))
@@ -593,35 +535,12 @@ struct EditBlockView: View {
     }
     
     private func saveBlock() {
-        for club in originalGroup.clubs {
-            if !selectedClubs.contains(club.type) {
-                modelContext.delete(club)
-            } else {
-                club.name = name
-                let distString = yardages[club.type] ?? ""
-                club.averageDistance = Double(distString)
-            }
-        }
-        
-        let existingTypes = Set(originalGroup.clubs.map { $0.type })
-        for clubType in selectedClubs {
-            if !existingTypes.contains(clubType) {
-                let distString = yardages[clubType] ?? ""
-                let dist = Double(distString)
-                let newClub = Club(name: name, type: clubType, averageDistance: dist, blockCategory: originalGroup.category)
-                modelContext.insert(newClub)
-            }
-        }
-        
-        try? modelContext.save()
+        viewModel.saveEditedBlock(context: modelContext, originalGroup: originalGroup, name: name, selectedClubs: selectedClubs, yardages: yardages)
         dismiss()
     }
     
     private func deleteBlock() {
-        for club in originalGroup.clubs {
-            modelContext.delete(club)
-        }
-        try? modelContext.save()
+        viewModel.deleteBlock(context: modelContext, originalGroup: originalGroup)
         dismiss()
     }
 }

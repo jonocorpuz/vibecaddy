@@ -2,6 +2,9 @@ import SwiftUI
 import MapKit
 
 struct PlayView: View {
+    @Environment(UserViewModel.self) private var userViewModel
+    @State private var viewModel = PlayViewModel()
+    
     let bgDark = Color(red: 0.10, green: 0.08, blue: 0.07)
     let cardDark = Color(red: 0.14, green: 0.12, blue: 0.11)
     let textBeige = Color(red: 0.86, green: 0.81, blue: 0.71)
@@ -30,7 +33,7 @@ struct PlayView: View {
                 
                 HStack {
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("Hello Jonathan")
+                        Text("Hello \(userViewModel.profile.name)")
                             .font(.system(.title, design: .monospaced).bold())
                             .foregroundColor(textBeige)
                         
@@ -55,13 +58,13 @@ struct PlayView: View {
                 
                 // Weather & Wind Containers
                 HStack(spacing: 16) {
-                    InfoCard(title: "WEATHER", value: "72°", icon: "sun.max.fill")
-                    InfoCard(title: "WIND", value: "5 MPH", icon: "wind")
+                    InfoCard(title: "WEATHER", value: viewModel.weatherTemperature, icon: viewModel.weatherIcon)
+                    InfoCard(title: "WIND", value: viewModel.windSpeed, icon: viewModel.windIcon)
                 }
                 .padding(.horizontal, 30)
                 
                 Button(action: {
-                    // Play action to be implemented
+                    viewModel.startRound()
                 }) {
                     Text("START ROUND")
                         .font(.system(.title3, design: .monospaced).bold())
@@ -113,4 +116,5 @@ struct InfoCard: View {
 
 #Preview {
     PlayView()
+        .environment(UserViewModel())
 }

@@ -1,29 +1,12 @@
 import SwiftUI
 
-struct MatchHistoryItem {
-    let id = UUID()
-    let course: String
-    let score: Int
-    let date: String
-    let hcpAffect: Double
-    let birdies: Int
-    let pars: Int
-    let bogeys: Int
-    let doubleBogeys: Int
-    let doublePars: Int
-}
-
 struct LeaderboardView: View {
+    @Environment(UserViewModel.self) private var userViewModel
+    @State private var viewModel = LeaderboardViewModel()
+    
     let bgDark = Color(red: 0.10, green: 0.08, blue: 0.07)
     let cardDark = Color(red: 0.14, green: 0.12, blue: 0.11)
     let textBeige = Color(red: 0.86, green: 0.81, blue: 0.71)
-    
-    let mockHistory = [
-        MatchHistoryItem(course: "Pebble Beach", score: 82, date: "Oct 12", hcpAffect: -0.2, birdies: 2, pars: 8, bogeys: 5, doubleBogeys: 2, doublePars: 1),
-        MatchHistoryItem(course: "Spyglass Hill", score: 88, date: "Oct 5", hcpAffect: 0.4, birdies: 0, pars: 7, bogeys: 7, doubleBogeys: 3, doublePars: 1),
-        MatchHistoryItem(course: "Torrey Pines", score: 85, date: "Sep 28", hcpAffect: -0.1, birdies: 1, pars: 9, bogeys: 5, doubleBogeys: 2, doublePars: 1),
-        MatchHistoryItem(course: "Bandon Dunes", score: 79, date: "Sep 20", hcpAffect: -0.5, birdies: 3, pars: 10, bogeys: 4, doubleBogeys: 1, doublePars: 0)
-    ]
     
     var body: some View {
         ZStack {
@@ -72,7 +55,7 @@ struct LeaderboardView: View {
                                         .frame(width: 120, height: 120)
                                     
                                     VStack(spacing: -2) {
-                                        Text("12.4")
+                                        Text(String(format: "%.1f", userViewModel.profile.handicap))
                                             .font(.system(.title2, design: .monospaced).bold())
                                             .foregroundColor(textBeige)
                                         Text("HCP")
@@ -92,7 +75,7 @@ struct LeaderboardView: View {
                                         Text("Peak HCP")
                                             .font(.system(.caption, design: .monospaced))
                                             .foregroundColor(textBeige.opacity(0.5))
-                                        Text("11.2")
+                                        Text(String(format: "%.1f", viewModel.peakHandicap))
                                             .font(.system(.headline, design: .monospaced).bold())
                                             .foregroundColor(textBeige)
                                     }
@@ -101,7 +84,7 @@ struct LeaderboardView: View {
                                         Text("Last 5 Rnds")
                                             .font(.system(.caption, design: .monospaced))
                                             .foregroundColor(textBeige.opacity(0.5))
-                                        Text("13.1")
+                                        Text(String(format: "%.1f", viewModel.last5RoundsHandicap))
                                             .font(.system(.headline, design: .monospaced).bold())
                                             .foregroundColor(textBeige)
                                     }
@@ -115,13 +98,13 @@ struct LeaderboardView: View {
                             
                             // Average Metrics
                             HStack {
-                                MetricItem(title: "Birdies", value: "1.2", color: textBeige, textBeige: textBeige)
+                                MetricItem(title: "Birdies", value: viewModel.averageBirdies, color: textBeige, textBeige: textBeige)
                                 Spacer()
-                                MetricItem(title: "Pars", value: "7.4", color: textBeige, textBeige: textBeige)
+                                MetricItem(title: "Pars", value: viewModel.averagePars, color: textBeige, textBeige: textBeige)
                                 Spacer()
-                                MetricItem(title: "Bogeys", value: "6.2", color: textBeige, textBeige: textBeige)
+                                MetricItem(title: "Bogeys", value: viewModel.averageBogeys, color: textBeige, textBeige: textBeige)
                                 Spacer()
-                                MetricItem(title: "Bogey+", value: "3.2", color: textBeige, textBeige: textBeige)
+                                MetricItem(title: "Bogey+", value: viewModel.averageDoubleBogeysPlus, color: textBeige, textBeige: textBeige)
                             }
                             .padding(.horizontal, 12)
                         }
@@ -148,7 +131,7 @@ struct LeaderboardView: View {
                             
                             ScrollView(showsIndicators: false) {
                                 VStack(spacing: 0) {
-                                    ForEach(mockHistory, id: \.id) { match in
+                                    ForEach(viewModel.matchHistory, id: \.id) { match in
                                         // Date Header
                                         HStack {
                                             Text(match.date.uppercased())
@@ -158,7 +141,7 @@ struct LeaderboardView: View {
                                         }
                                         .padding(.horizontal, 24)
                                         .padding(.bottom, 12)
-                                        .padding(.top, match.id == mockHistory.first?.id ? 0 : 20)
+                                        .padding(.top, match.id == viewModel.matchHistory.first?.id ? 0 : 20)
                                         
                                         // Match Row
                                         HStack(spacing: 16) {
@@ -203,7 +186,7 @@ struct LeaderboardView: View {
                                         .padding(.horizontal, 24)
                                         .padding(.bottom, 24)
                                         
-                                        if match.id != mockHistory.last?.id {
+                                        if match.id != viewModel.matchHistory.last?.id {
                                             Divider().background(textBeige.opacity(0.1))
                                         }
                                     }
@@ -243,4 +226,5 @@ struct MetricItem: View {
 
 #Preview {
     LeaderboardView()
+        .environment(UserViewModel())
 }
