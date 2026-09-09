@@ -2,8 +2,8 @@
 //  NeonButton.swift
 //  VibeCaddy
 //
-//  Tactical actuator button with haptic feedback, spring-press scaling,
-//  and neon border illumination.
+//  Premium interactive action button with signature magenta/purple gradients,
+//  smooth continuous rounded corners, haptic feedback, and clean typography.
 //
 
 import SwiftUI
@@ -19,16 +19,16 @@ public enum NeonButtonStyleType: Equatable, Sendable {
 
 public struct NeonButtonStyle: ButtonStyle {
     public var style: NeonButtonStyleType
-    public var cutSize: CGFloat
+    public var cornerRadius: CGFloat
     public var isFullWidth: Bool
     
     public init(
         style: NeonButtonStyleType = .primaryAction,
-        cutSize: CGFloat = 8,
+        cutSize: CGFloat = 12, // Mapped for backward compatibility
         isFullWidth: Bool = false
     ) {
         self.style = style
-        self.cutSize = cutSize
+        self.cornerRadius = 12
         self.isFullWidth = isFullWidth
     }
     
@@ -36,7 +36,7 @@ public struct NeonButtonStyle: ButtonStyle {
         NeonButtonContent(
             configuration: configuration,
             style: style,
-            cutSize: cutSize,
+            cornerRadius: cornerRadius,
             isFullWidth: isFullWidth
         )
     }
@@ -45,78 +45,67 @@ public struct NeonButtonStyle: ButtonStyle {
 private struct NeonButtonContent: View {
     let configuration: ButtonStyle.Configuration
     let style: NeonButtonStyleType
-    let cutSize: CGFloat
+    let cornerRadius: CGFloat
     let isFullWidth: Bool
     
     @Environment(\.isEnabled) private var isEnabled
     
-    private var shape: ChamferedRectangle {
-        ChamferedRectangle(cutSize: cutSize, corners: [.topRight, .bottomLeft])
+    private var shape: RoundedRectangle {
+        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
     }
     
-    private var primaryColor: Color {
+    @ViewBuilder
+    private var backgroundView: some View {
         switch style {
         case .primaryAction:
-            return NeoFuturisticTheme.cyberGreen
+            NeoFuturisticTheme.primaryGradient
+                .opacity(configuration.isPressed ? 0.85 : 1.0)
         case .secondaryTactical:
-            return NeoFuturisticTheme.radianiteCyan
+            NeoFuturisticTheme.surfaceElevated
+                .opacity(configuration.isPressed ? 0.7 : 1.0)
         case .hazard:
-            return NeoFuturisticTheme.hazardRed
+            NeoFuturisticTheme.statusDanger
+                .opacity(configuration.isPressed ? 0.85 : 1.0)
         }
     }
     
-    private var backgroundColor: Color {
+    private var strokeColor: Color {
         switch style {
         case .primaryAction:
-            return primaryColor.opacity(configuration.isPressed ? 0.35 : 0.18)
+            return Color.white.opacity(configuration.isPressed ? 0.3 : 0.18)
         case .secondaryTactical:
-            return NeoFuturisticTheme.surfaceDark.opacity(configuration.isPressed ? 0.9 : 0.7)
+            return Color.white.opacity(0.1)
         case .hazard:
-            return primaryColor.opacity(configuration.isPressed ? 0.35 : 0.15)
+            return Color.white.opacity(0.2)
         }
     }
     
     private var textColor: Color {
-        if !isEnabled {
-            return NeoFuturisticTheme.textMuted
-        }
+        guard isEnabled else { return NeoFuturisticTheme.textMuted }
         switch style {
-        case .primaryAction:
-            return NeoFuturisticTheme.cyberGreen
+        case .primaryAction, .hazard:
+            return .white
         case .secondaryTactical:
             return NeoFuturisticTheme.textPrimary
-        case .hazard:
-            return NeoFuturisticTheme.hazardRed
         }
-    }
-    
-    private var glowRadius: CGFloat {
-        guard isEnabled else { return 0 }
-        return configuration.isPressed ? 8 : 4
     }
     
     var body: some View {
         configuration.label
-            .font(.hudSubheadline)
+            .font(.system(size: 15, weight: .semibold, design: .default))
             .foregroundStyle(textColor)
-            .hudTracking(1.5)
+            .hudTracking(0.8)
             .padding(.horizontal, 20)
             .padding(.vertical, 14)
             .frame(maxWidth: isFullWidth ? .infinity : nil)
-            .background(
-                shape
-                    .fill(.ultraThinMaterial)
-            )
-            .background(
-                shape
-                    .fill(backgroundColor)
-            )
+            .background(backgroundView)
+            .clipShape(shape)
             .overlay(
                 shape
-                    .stroke(isEnabled ? primaryColor : NeoFuturisticTheme.textMuted.opacity(0.4), lineWidth: 1.5)
-                    .shadow(color: isEnabled ? primaryColor.opacity(0.6) : .clear, radius: glowRadius)
+                    .stroke(strokeColor, lineWidth: 1.0)
             )
-            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+            .shadow(color: Color.black.opacity(style == .primaryAction ? 0.25 : 0.1), radius: 6, x: 0, y: 3)
+            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
             .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
             .opacity(isEnabled ? 1.0 : 0.5)
             .onChange(of: configuration.isPressed) { _, isPressed in

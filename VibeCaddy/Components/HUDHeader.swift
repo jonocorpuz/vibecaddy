@@ -2,8 +2,8 @@
 //  HUDHeader.swift
 //  VibeCaddy
 //
-//  Top HUD bar component displaying the operator identity, telemetry status,
-//  and tactical avatar badge.
+//  Clean top header bar displaying operator identity, subtle status badge,
+//  and sleek avatar tile.
 //
 
 import SwiftUI
@@ -21,7 +21,7 @@ public struct HUDHeader<Trailing: View>: View {
         title: String,
         subtitle: String? = nil,
         statusIndicatorText: String? = "ONLINE",
-        statusColor: Color = NeoFuturisticTheme.cyberGreen,
+        statusColor: Color = NeoFuturisticTheme.statusSuccess,
         avatarIcon: String = "person.fill",
         showAvatar: Bool = true,
         @ViewBuilder trailing: @escaping () -> Trailing = { EmptyView() }
@@ -43,25 +43,23 @@ public struct HUDHeader<Trailing: View>: View {
                         Circle()
                             .fill(statusColor)
                             .frame(width: 6, height: 6)
-                            .shadow(color: statusColor.opacity(0.8), radius: 3)
                         
                         Text(statusIndicatorText.uppercased())
-                            .font(.hudTelemetry)
+                            .font(.system(size: 11, weight: .semibold, design: .default))
                             .foregroundStyle(statusColor)
-                            .hudTracking(1.2)
+                            .hudTracking(1.0)
                     }
                 }
                 
                 Text(title)
-                    .font(.hudHeadline)
+                    .font(.system(size: 24, weight: .bold, design: .default))
                     .foregroundStyle(NeoFuturisticTheme.textPrimary)
-                    .hudTracking(1.0)
+                    .hudTracking(0.2)
                 
                 if let subtitle = subtitle {
                     Text(subtitle)
-                        .font(.hudCaption)
+                        .font(.system(size: 14, weight: .medium, design: .default))
                         .foregroundStyle(NeoFuturisticTheme.textSecondary)
-                        .hudTracking(0.8)
                 }
             }
             
@@ -70,12 +68,18 @@ public struct HUDHeader<Trailing: View>: View {
             trailing()
             
             if showAvatar {
-                HexBadge(style: .chamfered(cutSize: 8), accentColor: NeoFuturisticTheme.radianiteCyan) {
-                    Image(systemName: avatarIcon)
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundStyle(NeoFuturisticTheme.radianiteCyan)
-                        .frame(width: 40, height: 40)
-                }
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(NeoFuturisticTheme.surfaceElevated)
+                    .frame(width: 40, height: 40)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .stroke(Color.white.opacity(0.1), lineWidth: 1.0)
+                    )
+                    .overlay(
+                        Image(systemName: avatarIcon)
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(NeoFuturisticTheme.accentMagenta)
+                    )
             }
         }
         .padding(.horizontal, 20)

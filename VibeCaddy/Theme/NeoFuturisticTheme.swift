@@ -2,8 +2,9 @@
 //  NeoFuturisticTheme.swift
 //  VibeCaddy
 //
-//  Centralized design tokens and theme engine for the Valorant-inspired
-//  neo-futuristic tactical HUD aesthetic.
+//  Centralized design tokens and theme engine for the Valorant Neo
+//  premium aesthetic. Features deep slate canvas, muted magenta/purple accents,
+//  subtle cyan/teal data highlights, and modern sans-serif typography.
 //
 
 import SwiftUI
@@ -52,95 +53,153 @@ extension Color {
 // MARK: - NeoFuturisticTheme Namespace
 
 public enum NeoFuturisticTheme {
-    // MARK: Palette Tokens
-    /// Deep OLED canvas background (#0A0E14)
-    public static let voidBlack = Color(hex: "#0A0E14")
+    // MARK: - Canvas & Surface Tokens (Slate / Navy Palette)
+    /// Main app canvas background (#1A1C23)
+    public static let slateBackground = Color(hex: "#1A1C23")
     
-    /// Tactical card & panel base fill (#0D1117)
-    public static let panelDark = Color(hex: "#0D1117")
+    /// Primary container surface for cards and sheets (#222530)
+    public static let surfacePrimary = Color(hex: "#222530")
     
-    /// Elevated tactical container fill (#121820)
-    public static let surfaceDark = Color(hex: "#121820")
+    /// Elevated interactive surface for selected states and active rows (#282C3A)
+    public static let surfaceElevated = Color(hex: "#282C3A")
     
-    /// Accent elevated surface (#18202C)
-    public static let surfaceElevated = Color(hex: "#18202C")
+    /// Inset subtle surface for progress tracks and inputs (#1E2029)
+    public static let surfaceSubtle = Color(hex: "#1E2029")
     
-    /// High-voltage active, birdies, positive delta (#00FF87)
-    public static let cyberGreen = Color(hex: "#00FF87")
+    // MARK: - Primary Accent Tokens (Muted Magenta & Violet)
+    /// Signature Valorant Neo primary magenta accent (#9D4EDD)
+    public static let accentMagenta = Color(hex: "#9D4EDD")
     
-    /// Tactical reticles, active navigation, weather/radar telemetry (#00F0FF)
-    public static let radianiteCyan = Color(hex: "#00F0FF")
+    /// Deep rich purple gradient termination (#7B2CBF)
+    public static let accentPurple = Color(hex: "#7B2CBF")
     
-    /// Warning, bogeys, delete actions, danger alerts (#FF4655)
-    public static let hazardRed = Color(hex: "#FF4655")
+    /// Prestige violet accent highlight (#8A2BE2)
+    public static let accentViolet = Color(hex: "#8A2BE2")
     
-    /// Prestige metrics, peak stats, special weapon badges (#9B51E0)
-    public static let neonViolet = Color(hex: "#9B51E0")
+    // MARK: - Data Highlight Tokens (Muted Cyan & Teal)
+    /// Subtle cyan telemetry highlight (#48CAE4)
+    public static let dataCyan = Color(hex: "#48CAE4")
     
-    /// Primary high-contrast tactical readout text (#FFFFFF)
-    public static let textPrimary = Color(hex: "#FFFFFF")
+    /// Fresh teal secondary telemetry highlight (#00F5D4)
+    public static let dataTeal = Color(hex: "#00F5D4")
     
-    /// Secondary telemetry label text (#8B949E)
-    public static let textSecondary = Color(hex: "#8B949E")
+    // MARK: - Functional Status Tokens
+    /// Clean emerald status token for birdies, online status, positive states (#10B981)
+    public static let statusSuccess = Color(hex: "#10B981")
     
-    /// Muted tactical border / grid text (#484F58)
-    public static let textMuted = Color(hex: "#484F58")
+    /// Clean rose/coral token for bogeys, hazards, and alerts (#F43F5E)
+    public static let statusDanger = Color(hex: "#F43F5E")
     
-    /// Translucent dark overlay for glassmorphic surfaces (#151C26 at 65% opacity)
-    public static let glassOverlay = Color(hex: "#151C26").opacity(0.65)
+    /// Clean amber token for warnings and par indicators (#F59E0B)
+    public static let statusWarning = Color(hex: "#F59E0B")
     
-    // MARK: - Typography Tokens
-    /// Major section header: 24pt bold monospaced
-    public static let hudHeadline = Font.system(size: 24, weight: .bold, design: .monospaced)
+    // MARK: - Typography & Content Tokens
+    /// Off-white high contrast readable text (#F8FAFC)
+    public static let textPrimary = Color(hex: "#F8FAFC")
     
-    /// Tactical title: 20pt bold monospaced
-    public static let hudTitle = Font.system(size: 20, weight: .bold, design: .monospaced)
+    /// Clean slate secondary label text (#94A3B8)
+    public static let textSecondary = Color(hex: "#94A3B8")
     
-    /// Sub-panel header: 16pt semibold monospaced
-    public static let hudSubheadline = Font.system(size: 16, weight: .semibold, design: .monospaced)
+    /// Muted slate text for disabled or background elements (#64748B)
+    public static let textMuted = Color(hex: "#64748B")
     
-    /// Tactical body text: 14pt regular monospaced
-    public static let hudBody = Font.system(size: 14, weight: .regular, design: .monospaced)
+    // MARK: - Border & Stroke Tokens
+    /// Subtle 1px container stroke
+    public static let borderSubtle = Color.white.opacity(0.08)
     
-    /// Small indicator label: 12pt medium monospaced
-    public static let hudCaption = Font.system(size: 12, weight: .medium, design: .monospaced)
+    /// Medium container stroke
+    public static let borderMedium = Color.white.opacity(0.12)
     
-    /// Compact sensor telemetry / status tag: 11pt heavy monospaced
-    public static let hudTelemetry = Font.system(size: 11, weight: .heavy, design: .monospaced)
-
+    /// Accent magenta container stroke
+    public static let borderAccent = Color(hex: "#9D4EDD").opacity(0.35)
+    
+    // MARK: - Typography Tokens (Clean Sans-Serif)
+    /// Major section header: 24pt bold sans-serif
+    public static let hudHeadline = Font.system(size: 24, weight: .bold, design: .default)
+    
+    /// Tactical title: 20pt bold sans-serif
+    public static let hudTitle = Font.system(size: 20, weight: .bold, design: .default)
+    
+    /// Sub-panel header: 16pt semibold sans-serif
+    public static let hudSubheadline = Font.system(size: 16, weight: .semibold, design: .default)
+    
+    /// Clean body text: 14pt regular sans-serif
+    public static let hudBody = Font.system(size: 14, weight: .regular, design: .default)
+    
+    /// Small indicator label: 12pt medium sans-serif
+    public static let hudCaption = Font.system(size: 12, weight: .medium, design: .default)
+    
+    /// Compact sensor telemetry / status tag: 11pt semibold sans-serif
+    public static let hudTelemetry = Font.system(size: 11, weight: .semibold, design: .default)
+    
     // MARK: - Gradients
-    public static let cyanToGreenGradient = LinearGradient(
-        colors: [radianiteCyan, cyberGreen],
+    /// Signature Neo gradient (magenta -> purple)
+    public static let primaryGradient = LinearGradient(
+        colors: [accentMagenta, accentPurple],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
     
-    public static let cyanToClearGradient = LinearGradient(
-        colors: [radianiteCyan.opacity(0.6), Color.clear],
-        startPoint: .top,
-        endPoint: .bottom
-    )
-    
-    public static let hazardGradient = LinearGradient(
-        colors: [hazardRed, hazardRed.opacity(0.4)],
+    /// Clean data telemetry gradient (cyan -> teal)
+    public static let dataGradient = LinearGradient(
+        colors: [dataCyan, dataTeal],
         startPoint: .leading,
         endPoint: .trailing
     )
     
-    public static let violetToCyanGradient = LinearGradient(
-        colors: [neonViolet, radianiteCyan],
+    /// Subtle container top-light reflection border gradient
+    public static let cardBorderGradient = LinearGradient(
+        colors: [Color.white.opacity(0.14), Color.white.opacity(0.04)],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
+    
+    // MARK: - Backward Compatibility Aliases
+    public static let voidBlack = slateBackground
+    public static let panelDark = surfacePrimary
+    public static let surfaceDark = surfacePrimary
+    public static let cyberGreen = statusSuccess
+    public static let radianiteCyan = dataCyan
+    public static let hazardRed = statusDanger
+    public static let neonViolet = accentMagenta
+    public static let cyanToGreenGradient = dataGradient
+    public static let cyanToClearGradient = LinearGradient(
+        colors: [dataCyan.opacity(0.4), Color.clear],
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    public static let hazardGradient = LinearGradient(
+        colors: [statusDanger, statusDanger.opacity(0.4)],
+        startPoint: .leading,
+        endPoint: .trailing
+    )
+    public static let violetToCyanGradient = LinearGradient(
+        colors: [accentMagenta, dataCyan],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+    public static let glassOverlay = surfacePrimary.opacity(0.85)
 }
 
 // MARK: - Color Convenience Extensions
 
 extension Color {
+    public static let slateBackground = NeoFuturisticTheme.slateBackground
+    public static let surfacePrimary = NeoFuturisticTheme.surfacePrimary
+    public static let surfaceElevated = NeoFuturisticTheme.surfaceElevated
+    public static let surfaceSubtle = NeoFuturisticTheme.surfaceSubtle
+    public static let accentMagenta = NeoFuturisticTheme.accentMagenta
+    public static let accentPurple = NeoFuturisticTheme.accentPurple
+    public static let accentViolet = NeoFuturisticTheme.accentViolet
+    public static let dataCyan = NeoFuturisticTheme.dataCyan
+    public static let dataTeal = NeoFuturisticTheme.dataTeal
+    public static let statusSuccess = NeoFuturisticTheme.statusSuccess
+    public static let statusDanger = NeoFuturisticTheme.statusDanger
+    public static let statusWarning = NeoFuturisticTheme.statusWarning
+    
     public static let voidBlack = NeoFuturisticTheme.voidBlack
     public static let panelDark = NeoFuturisticTheme.panelDark
     public static let surfaceDark = NeoFuturisticTheme.surfaceDark
-    public static let surfaceElevated = NeoFuturisticTheme.surfaceElevated
     public static let cyberGreen = NeoFuturisticTheme.cyberGreen
     public static let radianiteCyan = NeoFuturisticTheme.radianiteCyan
     public static let hazardRed = NeoFuturisticTheme.hazardRed
@@ -164,8 +223,8 @@ extension Font {
 // MARK: - View Tracking Modifier
 
 extension View {
-    /// Applies uppercase tactical letter-spacing to text elements
-    public func hudTracking(_ value: CGFloat = 1.5) -> some View {
+    /// Applies subtle letter-spacing to text elements
+    public func hudTracking(_ value: CGFloat = 1.0) -> some View {
         self.tracking(value)
     }
 }

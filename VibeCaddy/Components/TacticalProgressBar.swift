@@ -2,8 +2,8 @@
 //  TacticalProgressBar.swift
 //  VibeCaddy
 //
-//  High-tech progress bar with neon gradient fill, glow effects, and
-//  tactical track styling.
+//  Clean telemetry progress bar with smooth gradients, subtle track styling,
+//  and no tacky glow shadows.
 //
 
 import SwiftUI
@@ -18,11 +18,11 @@ public struct TacticalProgressBar: View {
     
     public init(
         progress: Double,
-        height: CGFloat = 6,
-        gradient: LinearGradient = NeoFuturisticTheme.cyanToGreenGradient,
+        height: CGFloat = 5,
+        gradient: LinearGradient = NeoFuturisticTheme.dataGradient,
         trackColor: Color = NeoFuturisticTheme.surfaceElevated,
-        showGlow: Bool = true,
-        cornerRadius: CGFloat = 3
+        showGlow: Bool = false,
+        cornerRadius: CGFloat = 2.5
     ) {
         self.progress = max(0.0, min(progress, 1.0))
         self.height = height
@@ -36,23 +36,17 @@ public struct TacticalProgressBar: View {
         GeometryReader { geometry in
             let totalWidth = geometry.size.width
             let fillWidth = totalWidth * CGFloat(progress)
+            let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
             
             ZStack(alignment: .leading) {
-                // Background Track
-                RoundedRectangle(cornerRadius: cornerRadius)
+                shape
                     .fill(trackColor)
                     .frame(height: height)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: cornerRadius)
-                            .stroke(NeoFuturisticTheme.textMuted.opacity(0.3), lineWidth: 0.5)
-                    )
                 
-                // Progress Fill
                 if fillWidth > 0 {
-                    RoundedRectangle(cornerRadius: cornerRadius)
+                    shape
                         .fill(gradient)
                         .frame(width: fillWidth, height: height)
-                        .shadow(color: showGlow ? NeoFuturisticTheme.radianiteCyan.opacity(0.6) : .clear, radius: 4)
                 }
             }
         }

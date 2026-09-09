@@ -2,8 +2,8 @@
 //  HexBadge.swift
 //  VibeCaddy
 //
-//  Tactical hexagonal and chamfered badges with glowing neon outlines
-//  used for avatar frames, weapon class tags, and status telemetry.
+//  Clean pill and rounded telemetry badge used for status tags,
+//  club categories, and metric indicators.
 //
 
 import SwiftUI
@@ -11,6 +11,7 @@ import SwiftUI
 public enum HexBadgeStyle: Equatable, Sendable {
     case hexagon
     case chamfered(cutSize: CGFloat = 6)
+    case rounded(radius: CGFloat = 6)
 }
 
 public struct HexBadge<Content: View>: View {
@@ -22,16 +23,16 @@ public struct HexBadge<Content: View>: View {
     @ViewBuilder public var content: () -> Content
     
     public init(
-        style: HexBadgeStyle = .chamfered(cutSize: 6),
-        accentColor: Color = NeoFuturisticTheme.radianiteCyan,
-        fillColor: Color = NeoFuturisticTheme.surfaceDark.opacity(0.85),
+        style: HexBadgeStyle = .rounded(radius: 6),
+        accentColor: Color = NeoFuturisticTheme.dataCyan,
+        fillColor: Color? = nil,
         borderWidth: CGFloat = 1.0,
-        glowRadius: CGFloat = 4,
+        glowRadius: CGFloat = 0,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self.style = style
         self.accentColor = accentColor
-        self.fillColor = fillColor
+        self.fillColor = fillColor ?? accentColor.opacity(0.12)
         self.borderWidth = borderWidth
         self.glowRadius = glowRadius
         self.content = content
@@ -41,48 +42,34 @@ public struct HexBadge<Content: View>: View {
         Group {
             switch style {
             case .hexagon:
+                let shape = HexagonShape()
                 content()
                     .padding(8)
-                    .background(
-                        HexagonShape()
-                            .fill(.ultraThinMaterial)
-                    )
-                    .background(
-                        HexagonShape()
-                            .fill(fillColor)
-                    )
-                    .overlay(
-                        HexagonShape()
-                            .stroke(accentColor, lineWidth: borderWidth)
-                            .shadow(color: accentColor.opacity(0.5), radius: glowRadius)
-                    )
-                    .clipShape(HexagonShape())
-                
+                    .background(shape.fill(fillColor))
+                    .overlay(shape.stroke(accentColor.opacity(0.3), lineWidth: borderWidth))
+                    .clipShape(shape)
+                    
             case .chamfered(let cutSize):
                 let shape = ChamferedRectangle(cutSize: cutSize, corners: .all)
                 content()
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(
-                        shape
-                            .fill(.ultraThinMaterial)
-                    )
-                    .background(
-                        shape
-                            .fill(fillColor)
-                    )
-                    .overlay(
-                        shape
-                            .stroke(accentColor, lineWidth: borderWidth)
-                            .shadow(color: accentColor.opacity(0.5), radius: glowRadius)
-                    )
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(shape.fill(fillColor))
+                    .overlay(shape.stroke(accentColor.opacity(0.3), lineWidth: borderWidth))
+                    .clipShape(shape)
+                    
+            case .rounded(let radius):
+                let shape = RoundedRectangle(cornerRadius: radius, style: .continuous)
+                content()
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(shape.fill(fillColor))
+                    .overlay(shape.stroke(accentColor.opacity(0.3), lineWidth: borderWidth))
                     .clipShape(shape)
             }
         }
     }
 }
-
-// MARK: - Dedicated Typed Convenience Badges
 
 public struct HexBadgeText: View {
     public var text: String
@@ -92,9 +79,9 @@ public struct HexBadgeText: View {
     
     public init(
         _ text: String,
-        style: HexBadgeStyle = .chamfered(cutSize: 5),
-        accentColor: Color = NeoFuturisticTheme.radianiteCyan,
-        font: Font = .hudTelemetry
+        style: HexBadgeStyle = .rounded(radius: 6),
+        accentColor: Color = NeoFuturisticTheme.dataCyan,
+        font: Font = .system(size: 11, weight: .semibold, design: .default)
     ) {
         self.text = text
         self.style = style
@@ -111,7 +98,7 @@ public struct HexBadgeText: View {
             Text(text.uppercased())
                 .font(font)
                 .foregroundStyle(accentColor)
-                .hudTracking(1.2)
+                .hudTracking(1.0)
         }
     }
 }
@@ -124,9 +111,9 @@ public struct HexBadgeIcon: View {
     
     public init(
         _ icon: String,
-        style: HexBadgeStyle = .chamfered(cutSize: 8),
-        accentColor: Color = NeoFuturisticTheme.radianiteCyan,
-        iconSize: CGFloat = 16
+        style: HexBadgeStyle = .rounded(radius: 8),
+        accentColor: Color = NeoFuturisticTheme.dataCyan,
+        iconSize: CGFloat = 14
     ) {
         self.icon = icon
         self.style = style
@@ -135,14 +122,17 @@ public struct HexBadgeIcon: View {
     }
     
     public var body: some View {
-        HexBadge(
-            style: style,
-            accentColor: accentColor,
-            fillColor: NeoFuturisticTheme.surfaceElevated.opacity(0.85)
-        ) {
-            Image(systemName: icon)
-                .font(.system(size: iconSize, weight: .bold))
-                .foregroundStyle(accentColor)
-        }
+        RoundedRectangle(cornerRadius: 8, style: .continuous)
+            .fill(NeoFuturisticTheme.surfaceElevated)
+            .frame(width: iconSize + 16, height: iconSize + 16)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .stroke(Color.white.opacity(0.1), lineWidth: 1.0)
+            )
+            .overlay(
+                Image(systemName: icon)
+                    .font(.system(size: iconSize, weight: .bold))
+                    .foregroundStyle(accentColor)
+            )
     }
 }
