@@ -175,6 +175,7 @@ struct PlayView: View {
                             .shadow(color: NeoFuturisticTheme.radianiteCyan.opacity(0.8), radius: 4)
                     )
             }
+            .accessibilityIdentifier("play_map_container")
             .padding(.horizontal, 24)
         }
     }

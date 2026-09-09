@@ -10,6 +10,10 @@ struct MainTabView: View {
     @State private var selectedTab: AppTab = .play
     @Namespace private var tabNamespace
     
+    init(initialTab: AppTab = .play) {
+        _selectedTab = State(initialValue: initialTab)
+    }
+    
     var body: some View {
         ZStack {
             NeoFuturisticTheme.voidBlack
