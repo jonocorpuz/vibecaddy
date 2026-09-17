@@ -5,3 +5,4 @@ build/
 *.xcworkspace/xcuserdata/
 *.xcodeproj/xcuserdata/
 *.xcuserdatad
+.agents/

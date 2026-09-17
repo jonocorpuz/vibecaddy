@@ -1,3 +1,8 @@
+//
+//  UserDataService.swift
+//  VibeCaddy
+//
+
 import Foundation
 
 protocol UserDataServiceProtocol {
@@ -5,22 +10,30 @@ protocol UserDataServiceProtocol {
     func saveUserProfile(_ profile: UserProfile)
 }
 
-final class UserDataService: UserDataServiceProtocol {
-    private let defaults = UserDefaults.standard
-    private let profileKey = "vibeCaddyUserProfile"
-    
-    func getUserProfile() -> UserProfile {
-        if let data = defaults.data(forKey: profileKey),
-           let profile = try? JSONDecoder().decode(UserProfile.self, from: data) {
-            return profile
-        }
-        // Default profile if none exists
-        return UserProfile(name: "Jonathan", handicap: 12.4)
+final class UserDataService: UserDataServiceProtocol, UserProfileStorageProtocol {
+    private let storage: UserProfileStorageProtocol
+
+    init(storage: UserProfileStorageProtocol = UserDefaultsStorageService.shared) {
+        self.storage = storage
     }
-    
+
+    // MARK: - UserDataServiceProtocol
+
+    func getUserProfile() -> UserProfile {
+        return storage.getProfile()
+    }
+
     func saveUserProfile(_ profile: UserProfile) {
-        if let data = try? JSONEncoder().encode(profile) {
-            defaults.set(data, forKey: profileKey)
-        }
+        storage.saveProfile(profile)
+    }
+
+    // MARK: - UserProfileStorageProtocol
+
+    func getProfile() -> UserProfile {
+        return storage.getProfile()
+    }
+
+    func saveProfile(_ profile: UserProfile) {
+        storage.saveProfile(profile)
     }
 }

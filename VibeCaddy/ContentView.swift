@@ -11,7 +11,7 @@ import SwiftData
 struct ContentView: View {
     var body: some View {
         ZStack {
-            NeoFuturisticTheme.voidBlack
+            NeoFuturisticTheme.slateBackground
                 .ignoresSafeArea()
             
             MainTabView()
@@ -23,4 +23,5 @@ struct ContentView: View {
 #Preview {
     ContentView()
         .environment(UserViewModel())
+        .environment(ClubsViewModel())
 }

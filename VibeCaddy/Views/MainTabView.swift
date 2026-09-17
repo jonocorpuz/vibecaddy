@@ -16,7 +16,7 @@ struct MainTabView: View {
     
     var body: some View {
         ZStack {
-            NeoFuturisticTheme.voidBlack
+            NeoFuturisticTheme.slateBackground
                 .ignoresSafeArea()
             
             Group {
@@ -47,7 +47,7 @@ struct MainTabView: View {
             ) {
                 let generator = UIImpactFeedbackGenerator(style: .light)
                 generator.impactOccurred()
-                withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.78)) {
                     selectedTab = .clubs
                 }
             }
@@ -61,7 +61,7 @@ struct MainTabView: View {
             ) {
                 let generator = UIImpactFeedbackGenerator(style: .light)
                 generator.impactOccurred()
-                withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.78)) {
                     selectedTab = .play
                 }
             }
@@ -75,7 +75,7 @@ struct MainTabView: View {
             ) {
                 let generator = UIImpactFeedbackGenerator(style: .light)
                 generator.impactOccurred()
-                withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.78)) {
                     selectedTab = .leaderboard
                 }
             }
@@ -83,28 +83,24 @@ struct MainTabView: View {
         .padding(.horizontal, 8)
         .padding(.vertical, 8)
         .background(
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .fill(.ultraThinMaterial)
-        )
-        .background(
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .fill(NeoFuturisticTheme.panelDark.opacity(0.85))
+            RoundedRectangle(cornerRadius: 28, style: .continuous)
+                .fill(Color(hex: "#1E222D"))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
+            RoundedRectangle(cornerRadius: 28, style: .continuous)
                 .stroke(
                     LinearGradient(
                         colors: [
-                            NeoFuturisticTheme.radianiteCyan.opacity(0.6),
-                            NeoFuturisticTheme.cyberGreen.opacity(0.5)
+                            Color.white.opacity(0.14),
+                            Color.white.opacity(0.04)
                         ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
+                        startPoint: .top,
+                        endPoint: .bottom
                     ),
                     lineWidth: 1.0
                 )
-                .shadow(color: NeoFuturisticTheme.radianiteCyan.opacity(0.3), radius: 8)
         )
+        .shadow(color: Color.black.opacity(0.35), radius: 10, x: 0, y: 4)
         .padding(.horizontal, 20)
         .padding(.bottom, 6)
     }
@@ -120,54 +116,55 @@ struct TabBarButton: View {
     
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 5) {
+            VStack(spacing: 4) {
                 Image(systemName: icon)
-                    .font(.system(size: 20, weight: .bold))
-                    .foregroundStyle(isSelected ? NeoFuturisticTheme.radianiteCyan : NeoFuturisticTheme.textSecondary)
-                    .shadow(
-                        color: isSelected ? NeoFuturisticTheme.radianiteCyan.opacity(0.85) : .clear,
-                        radius: 8
-                    )
+                    .font(.system(size: 19, weight: .semibold))
+                    .foregroundStyle(isSelected ? Color.white : Color(hex: "#6E7688"))
                 
                 Text(title)
-                    .font(.system(size: 11, weight: .heavy, design: .monospaced))
-                    .hudTracking(1.2)
-                    .foregroundStyle(isSelected ? NeoFuturisticTheme.textPrimary : NeoFuturisticTheme.textSecondary.opacity(0.7))
+                    .font(.system(size: 11, weight: .semibold, design: .default))
+                    .hudTracking(0.8)
+                    .foregroundStyle(isSelected ? Color.white : Color(hex: "#7E8799"))
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 10)
             .background {
                 if isSelected {
+                    let shape = RoundedRectangle(cornerRadius: 18, style: .continuous)
                     if let namespace = namespace {
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .fill(NeoFuturisticTheme.radianiteCyan.opacity(0.18))
+                        shape
+                            .fill(Color(hex: "#7A22E0").opacity(0.22))
                             .overlay(
-                                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                shape
                                     .stroke(
                                         LinearGradient(
-                                            colors: [NeoFuturisticTheme.radianiteCyan, NeoFuturisticTheme.cyberGreen],
-                                            startPoint: .leading,
-                                            endPoint: .trailing
+                                            colors: [
+                                                Color(hex: "#9F45F8").opacity(0.35),
+                                                Color(hex: "#7A22E0").opacity(0.2)
+                                            ],
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
                                         ),
-                                        lineWidth: 1.5
+                                        lineWidth: 1.0
                                     )
-                                    .shadow(color: NeoFuturisticTheme.radianiteCyan.opacity(0.6), radius: 6)
                             )
                             .matchedGeometryEffect(id: "activeTabIndicator", in: namespace)
                     } else {
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .fill(NeoFuturisticTheme.radianiteCyan.opacity(0.18))
+                        shape
+                            .fill(Color(hex: "#7A22E0").opacity(0.22))
                             .overlay(
-                                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                shape
                                     .stroke(
                                         LinearGradient(
-                                            colors: [NeoFuturisticTheme.radianiteCyan, NeoFuturisticTheme.cyberGreen],
-                                            startPoint: .leading,
-                                            endPoint: .trailing
+                                            colors: [
+                                                Color(hex: "#9F45F8").opacity(0.35),
+                                                Color(hex: "#7A22E0").opacity(0.2)
+                                            ],
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
                                         ),
-                                        lineWidth: 1.5
+                                        lineWidth: 1.0
                                     )
-                                    .shadow(color: NeoFuturisticTheme.radianiteCyan.opacity(0.6), radius: 6)
                             )
                     }
                 }
@@ -182,4 +179,5 @@ struct TabBarButton: View {
 #Preview {
     MainTabView()
         .environment(UserViewModel())
+        .environment(ClubsViewModel())
 }
