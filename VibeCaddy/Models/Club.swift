@@ -7,7 +7,6 @@ final class Club {
     var name: String
     var type: String
     var averageDistance: Double?
-    var player: Player?
     var blockCategory: String?
     
     init(id: UUID = UUID(), name: String, type: String, averageDistance: Double? = nil, blockCategory: String? = nil) {

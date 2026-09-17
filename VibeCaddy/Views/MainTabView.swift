@@ -1,19 +1,23 @@
 import SwiftUI
 
-enum AppTab {
+import UIKit
+
+enum AppTab: String, CaseIterable {
     case clubs, play, leaderboard
 }
 
 struct MainTabView: View {
     @State private var selectedTab: AppTab = .play
+    @Namespace private var tabNamespace
     
-    let bgDark = Color(red: 0.10, green: 0.08, blue: 0.07)
-    let cardDark = Color(red: 0.14, green: 0.12, blue: 0.11)
-    let textBeige = Color(red: 0.86, green: 0.81, blue: 0.71)
+    init(initialTab: AppTab = .play) {
+        _selectedTab = State(initialValue: initialTab)
+    }
     
     var body: some View {
         ZStack {
-            bgDark.ignoresSafeArea()
+            NeoFuturisticTheme.slateBackground
+                .ignoresSafeArea()
             
             Group {
                 switch selectedTab {
@@ -33,29 +37,72 @@ struct MainTabView: View {
     }
     
     private var customNavBar: some View {
-        HStack {
-            Spacer()
-            TabBarButton(icon: "bag.fill", title: "INVENTORY", isSelected: selectedTab == .clubs) {
-                selectedTab = .clubs
+        HStack(spacing: 6) {
+            TabBarButton(
+                icon: "bag.fill",
+                title: "INVENTORY",
+                isSelected: selectedTab == .clubs,
+                identifier: "tab_inventory",
+                namespace: tabNamespace
+            ) {
+                let generator = UIImpactFeedbackGenerator(style: .light)
+                generator.impactOccurred()
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.78)) {
+                    selectedTab = .clubs
+                }
             }
-            Spacer()
-            TabBarButton(icon: "map.fill", title: "PLAY", isSelected: selectedTab == .play) {
-                selectedTab = .play
+            
+            TabBarButton(
+                icon: "map.fill",
+                title: "PLAY",
+                isSelected: selectedTab == .play,
+                identifier: "tab_play",
+                namespace: tabNamespace
+            ) {
+                let generator = UIImpactFeedbackGenerator(style: .light)
+                generator.impactOccurred()
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.78)) {
+                    selectedTab = .play
+                }
             }
-            Spacer()
-            TabBarButton(icon: "trophy.fill", title: "RANKINGS", isSelected: selectedTab == .leaderboard) {
-                selectedTab = .leaderboard
+            
+            TabBarButton(
+                icon: "trophy.fill",
+                title: "RANKINGS",
+                isSelected: selectedTab == .leaderboard,
+                identifier: "tab_rankings",
+                namespace: tabNamespace
+            ) {
+                let generator = UIImpactFeedbackGenerator(style: .light)
+                generator.impactOccurred()
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.78)) {
+                    selectedTab = .leaderboard
+                }
             }
-            Spacer()
         }
-        .padding(.vertical, 16)
-        .background(cardDark)
-        .overlay(
-            Rectangle()
-                .frame(height: 1)
-                .foregroundColor(textBeige.opacity(0.15)),
-            alignment: .top
+        .padding(.horizontal, 8)
+        .padding(.vertical, 8)
+        .background(
+            RoundedRectangle(cornerRadius: 28, style: .continuous)
+                .fill(Color(hex: "#1E222D"))
         )
+        .overlay(
+            RoundedRectangle(cornerRadius: 28, style: .continuous)
+                .stroke(
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(0.14),
+                            Color.white.opacity(0.04)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    ),
+                    lineWidth: 1.0
+                )
+        )
+        .shadow(color: Color.black.opacity(0.35), radius: 10, x: 0, y: 4)
+        .padding(.horizontal, 20)
+        .padding(.bottom, 6)
     }
 }
 
@@ -63,23 +110,74 @@ struct TabBarButton: View {
     let icon: String
     let title: String
     let isSelected: Bool
+    var identifier: String = ""
+    var namespace: Namespace.ID? = nil
     let action: () -> Void
-    
-    let textBeige = Color(red: 0.86, green: 0.81, blue: 0.71)
     
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 6) {
+            VStack(spacing: 4) {
                 Image(systemName: icon)
-                    .font(.system(size: 22))
+                    .font(.system(size: 19, weight: .semibold))
+                    .foregroundStyle(isSelected ? Color.white : Color(hex: "#6E7688"))
+                
                 Text(title)
-                    .font(.system(size: 10, design: .monospaced).bold())
+                    .font(.system(size: 11, weight: .semibold, design: .default))
+                    .hudTracking(0.8)
+                    .foregroundStyle(isSelected ? Color.white : Color(hex: "#7E8799"))
             }
-            .foregroundColor(isSelected ? textBeige : textBeige.opacity(0.3))
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 10)
+            .background {
+                if isSelected {
+                    let shape = RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    if let namespace = namespace {
+                        shape
+                            .fill(Color(hex: "#7A22E0").opacity(0.22))
+                            .overlay(
+                                shape
+                                    .stroke(
+                                        LinearGradient(
+                                            colors: [
+                                                Color(hex: "#9F45F8").opacity(0.35),
+                                                Color(hex: "#7A22E0").opacity(0.2)
+                                            ],
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        ),
+                                        lineWidth: 1.0
+                                    )
+                            )
+                            .matchedGeometryEffect(id: "activeTabIndicator", in: namespace)
+                    } else {
+                        shape
+                            .fill(Color(hex: "#7A22E0").opacity(0.22))
+                            .overlay(
+                                shape
+                                    .stroke(
+                                        LinearGradient(
+                                            colors: [
+                                                Color(hex: "#9F45F8").opacity(0.35),
+                                                Color(hex: "#7A22E0").opacity(0.2)
+                                            ],
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        ),
+                                        lineWidth: 1.0
+                                    )
+                            )
+                    }
+                }
+            }
+            .contentShape(Rectangle())
         }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier(identifier.isEmpty ? title.lowercased() : identifier)
     }
 }
 
 #Preview {
     MainTabView()
+        .environment(UserViewModel())
+        .environment(ClubsViewModel())
 }

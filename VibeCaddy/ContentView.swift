@@ -10,10 +10,18 @@ import SwiftData
 
 struct ContentView: View {
     var body: some View {
-        MainTabView()
+        ZStack {
+            NeoFuturisticTheme.slateBackground
+                .ignoresSafeArea()
+            
+            MainTabView()
+        }
+        .preferredColorScheme(.dark)
     }
 }
 
 #Preview {
     ContentView()
+        .environment(UserViewModel())
+        .environment(ClubsViewModel())
 }

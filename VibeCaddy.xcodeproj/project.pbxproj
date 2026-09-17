@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		FBC8BUILDFILE001 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = FBC8PRODDEP001 /* SnapshotTesting */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		FBC8CADE3049061E00586C1D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -59,6 +63,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FBC8BUILDFILE001 /* SnapshotTesting in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -135,6 +140,7 @@
 			);
 			name = VibeCaddyTests;
 			packageProductDependencies = (
+				FBC8PRODDEP001 /* SnapshotTesting */,
 			);
 			productName = VibeCaddyTests;
 			productReference = FBC8CADD3049061E00586C1D /* VibeCaddyTests.xctest */;
@@ -195,6 +201,9 @@
 			);
 			mainGroup = FBC8CAC53049061C00586C1D;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				FBC8PACKAGE001 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = FBC8CACF3049061C00586C1D /* Products */;
 			projectDirPath = "";
@@ -570,6 +579,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		FBC8PACKAGE001 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-snapshot-testing";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.17.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		FBC8PRODDEP001 /* SnapshotTesting */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FBC8PACKAGE001 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
+			productName = SnapshotTesting;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = FBC8CAC63049061C00586C1D /* Project object */;
 }

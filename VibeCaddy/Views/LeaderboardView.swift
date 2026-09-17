@@ -1,246 +1,354 @@
 import SwiftUI
 
-struct MatchHistoryItem {
-    let id = UUID()
-    let course: String
-    let score: Int
-    let date: String
-    let hcpAffect: Double
-    let birdies: Int
-    let pars: Int
-    let bogeys: Int
-    let doubleBogeys: Int
-    let doublePars: Int
-}
+// MARK: - LeaderboardView (Esports Tournament Leaderboard & Combat Log)
 
 struct LeaderboardView: View {
-    let bgDark = Color(red: 0.10, green: 0.08, blue: 0.07)
-    let cardDark = Color(red: 0.14, green: 0.12, blue: 0.11)
-    let textBeige = Color(red: 0.86, green: 0.81, blue: 0.71)
-    
-    let mockHistory = [
-        MatchHistoryItem(course: "Pebble Beach", score: 82, date: "Oct 12", hcpAffect: -0.2, birdies: 2, pars: 8, bogeys: 5, doubleBogeys: 2, doublePars: 1),
-        MatchHistoryItem(course: "Spyglass Hill", score: 88, date: "Oct 5", hcpAffect: 0.4, birdies: 0, pars: 7, bogeys: 7, doubleBogeys: 3, doublePars: 1),
-        MatchHistoryItem(course: "Torrey Pines", score: 85, date: "Sep 28", hcpAffect: -0.1, birdies: 1, pars: 9, bogeys: 5, doubleBogeys: 2, doublePars: 1),
-        MatchHistoryItem(course: "Bandon Dunes", score: 79, date: "Sep 20", hcpAffect: -0.5, birdies: 3, pars: 10, bogeys: 4, doubleBogeys: 1, doublePars: 0)
-    ]
+    @Environment(UserViewModel.self) private var userViewModel
+    @State private var viewModel = LeaderboardViewModel()
     
     var body: some View {
         ZStack {
-            bgDark.ignoresSafeArea()
-            
+            NeoFuturisticTheme.slateBackground
+                .ignoresSafeArea()
+
             VStack(spacing: 0) {
-                HStack {
-                    Spacer()
-                    
-                    Image(systemName: "person.fill")
-                        .font(.system(size: 18))
-                        .foregroundColor(textBeige)
-                        .frame(width: 40, height: 40)
-                        .background(cardDark)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(textBeige.opacity(0.2), lineWidth: 1)
-                        )
-                }
-                .padding(.horizontal, 30)
-                .padding(.top, 16)
-                
-                VStack(spacing: 24) {
-                        HStack {
-                            Text("Overview")
-                                .font(.system(.largeTitle, design: .monospaced).bold())
-                                .foregroundColor(textBeige)
-                            Spacer()
-                        }
-                        .padding(.horizontal, 30)
-                        
-                        // Upper Section: Handicap & Metrics
-                        VStack {
-                            HStack(spacing: 24) {
-                                // Half Circle Chart
-                                ZStack(alignment: .bottom) {
-                                    Circle()
-                                        .trim(from: 0.5, to: 1.0)
-                                        .stroke(Color.white.opacity(0.05), style: StrokeStyle(lineWidth: 12, lineCap: .round))
-                                        .frame(width: 120, height: 120)
-                                    
-                                    Circle()
-                                        .trim(from: 0.5, to: 0.5 + (0.5 * 0.6)) // 60% progress
-                                        .stroke(textBeige, style: StrokeStyle(lineWidth: 12, lineCap: .round))
-                                        .frame(width: 120, height: 120)
-                                    
-                                    VStack(spacing: -2) {
-                                        Text("12.4")
-                                            .font(.system(.title2, design: .monospaced).bold())
-                                            .foregroundColor(textBeige)
-                                        Text("HCP")
-                                            .font(.system(.caption, design: .monospaced))
-                                            .foregroundColor(textBeige.opacity(0.5))
-                                    }
-                                    .padding(.bottom, 16)
-                                }
-                                .frame(width: 120, height: 60, alignment: .bottom)
-                                .clipped()
-                                .padding(.leading, 12)
-                                
-                                Spacer()
-                                
-                                VStack(alignment: .leading, spacing: 16) {
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        Text("Peak HCP")
-                                            .font(.system(.caption, design: .monospaced))
-                                            .foregroundColor(textBeige.opacity(0.5))
-                                        Text("11.2")
-                                            .font(.system(.headline, design: .monospaced).bold())
-                                            .foregroundColor(textBeige)
-                                    }
-                                    
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        Text("Last 5 Rnds")
-                                            .font(.system(.caption, design: .monospaced))
-                                            .foregroundColor(textBeige.opacity(0.5))
-                                        Text("13.1")
-                                            .font(.system(.headline, design: .monospaced).bold())
-                                            .foregroundColor(textBeige)
-                                    }
-                                }
-                                .padding(.trailing, 12)
-                            }
-                            
-                            Divider()
-                                .background(textBeige.opacity(0.1))
-                                .padding(.vertical, 16)
-                            
-                            // Average Metrics
-                            HStack {
-                                MetricItem(title: "Birdies", value: "1.2", color: textBeige, textBeige: textBeige)
-                                Spacer()
-                                MetricItem(title: "Pars", value: "7.4", color: textBeige, textBeige: textBeige)
-                                Spacer()
-                                MetricItem(title: "Bogeys", value: "6.2", color: textBeige, textBeige: textBeige)
-                                Spacer()
-                                MetricItem(title: "Bogey+", value: "3.2", color: textBeige, textBeige: textBeige)
-                            }
-                            .padding(.horizontal, 12)
-                        }
-                        .padding(24)
-                        .background(cardDark)
-                        .cornerRadius(20)
-                        .overlay(RoundedRectangle(cornerRadius: 20).stroke(textBeige.opacity(0.1), lineWidth: 1))
-                        .padding(.horizontal, 30)
-                        
-                        // Match History Container
-                        VStack(spacing: 0) {
-                            // Header
-                            HStack {
-                                Text("MATCH HISTORY")
-                                    .font(.system(.headline, design: .monospaced).bold())
-                                    .foregroundColor(textBeige)
-                                Spacer()
-                                Text("View All")
-                                    .font(.system(.caption, design: .monospaced))
-                                    .foregroundColor(textBeige.opacity(0.5))
-                            }
-                            .padding(.horizontal, 24)
-                            .padding(.vertical, 24)
-                            
-                            ScrollView(showsIndicators: false) {
-                                VStack(spacing: 0) {
-                                    ForEach(mockHistory, id: \.id) { match in
-                                        // Date Header
-                                        HStack {
-                                            Text(match.date.uppercased())
-                                                .font(.system(.caption2, design: .monospaced).bold())
-                                                .foregroundColor(textBeige.opacity(0.5))
-                                            Spacer()
-                                        }
-                                        .padding(.horizontal, 24)
-                                        .padding(.bottom, 12)
-                                        .padding(.top, match.id == mockHistory.first?.id ? 0 : 20)
-                                        
-                                        // Match Row
-                                        HStack(spacing: 16) {
-                                            // Course Info & Score
-                                            VStack(alignment: .leading, spacing: 6) {
-                                                Text(match.course.uppercased())
-                                                    .font(.system(.subheadline, design: .monospaced).bold())
-                                                    .foregroundColor(textBeige)
-                                                    .lineLimit(1)
-                                                    .truncationMode(.tail)
-                                                
-                                                HStack(spacing: 8) {
-                                                    Text("\(match.score)")
-                                                        .font(.system(.subheadline, design: .monospaced).bold())
-                                                        .foregroundColor(textBeige)
-                                                    
-                                                    Text(String(format: "%+0.1f", match.hcpAffect))
-                                                        .font(.system(.caption, design: .monospaced).bold())
-                                                        .foregroundColor(match.hcpAffect <= 0 ? .green : .red)
-                                                }
-                                            }
-                                            
-                                            Spacer(minLength: 12)
-                                            
-                                            // Statlines
-                                            VStack(alignment: .trailing, spacing: 2) {
-                                                Text("B/P/+1/+2/DP")
-                                                    .font(.system(size: 9, design: .monospaced))
-                                                    .foregroundColor(textBeige.opacity(0.5))
-                                                Text("\(match.birdies)/\(match.pars)/\(match.bogeys)/\(match.doubleBogeys)/\(match.doublePars)")
-                                                    .font(.system(.footnote, design: .monospaced).bold())
-                                                    .foregroundColor(textBeige.opacity(0.8))
-                                            }
-                                            
-                                            // Right Accent Line
-                                            Rectangle()
-                                                .fill(match.hcpAffect <= 0 ? Color.green : Color.red)
-                                                .frame(width: 4, height: 50)
-                                                .cornerRadius(2)
-                                                .padding(.leading, 8)
-                                        }
-                                        .padding(.horizontal, 24)
-                                        .padding(.bottom, 24)
-                                        
-                                        if match.id != mockHistory.last?.id {
-                                            Divider().background(textBeige.opacity(0.1))
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        .background(cardDark)
-                        .cornerRadius(20)
-                        .overlay(RoundedRectangle(cornerRadius: 20).stroke(textBeige.opacity(0.1), lineWidth: 1))
-                        .padding(.horizontal, 30)
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 20) {
+                        headerSection
+                        upperMetricHUD
+                        matchHistoryContainer
+                        Spacer(minLength: 40)
                     }
-                    .padding(.top, 16)
-                    .padding(.bottom, 40)
-                    // Removed ScrollView brace
+                    .padding(.bottom, 30)
+                }
             }
+        }
+        .onAppear {
+            viewModel.loadHistory()
+        }
+    }
+    
+    // MARK: - Header Section
+    
+    private var headerSection: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Overview")
+                    .font(.system(size: 24, weight: .bold, design: .default))
+                    .foregroundStyle(Color.white)
+                    .hudTracking(0.5)
+            }
+            Spacer()
+        }
+        .padding(.horizontal, 24)
+        .padding(.top, 8)
+    }
+    
+    // MARK: - Upper Metric HUD
+    
+    private var upperMetricHUD: some View {
+        VStack(spacing: 16) {
+            // Row 1: Cybernetic Arc Gauge & Stat Pods
+            HStack(alignment: .center, spacing: 20) {
+                // Handicap Arc Gauge
+                handicapArcGauge
+                
+                Spacer()
+                
+                // Stat Pods (Peak HCP & Last 5 Rnds)
+                VStack(alignment: .trailing, spacing: 10) {
+                    // Peak HCP Pod
+                    statPod(
+                        title: "Peak HCP",
+                        value: String(format: "%.1f", viewModel.peakHandicap),
+                        accentColor: Color(hex: "#B37DFF")
+                    )
+                    
+                    // Last 5 Rounds Pod
+                    statPod(
+                        title: "Last 5 Rnds",
+                        value: String(format: "%.1f", viewModel.last5RoundsHandicap),
+                        accentColor: Color(hex: "#38E1FF")
+                    )
+                }
+            }
+            
+            // Subtle 1px Divider
+            Rectangle()
+                .fill(Color.white.opacity(0.06))
+                .frame(height: 1)
+                .padding(.vertical, 4)
+            
+            // Row 2: Average Metrics Grid
+            HStack {
+                MetricItem(
+                    title: "Birdies",
+                    value: viewModel.averageBirdies,
+                    color: Color(hex: "#2CE5A5")
+                )
+                Spacer()
+                MetricItem(
+                    title: "Pars",
+                    value: viewModel.averagePars,
+                    color: Color(hex: "#7DD3FC")
+                )
+                Spacer()
+                MetricItem(
+                    title: "Bogeys",
+                    value: viewModel.averageBogeys,
+                    color: Color(hex: "#F87171")
+                )
+                Spacer()
+                MetricItem(
+                    title: "Bogey+",
+                    value: viewModel.averageDoubleBogeysPlus,
+                    color: Color(hex: "#EF4444")
+                )
+            }
+            .padding(.horizontal, 8)
+        }
+        .padding(20)
+        .background(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(Color(hex: "#202430"))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .stroke(Color.white.opacity(0.08), lineWidth: 1.0)
+        )
+        .padding(.horizontal, 24)
+    }
+    
+    // MARK: - Handicap Arc Gauge Component
+    
+    private var handicapArcGauge: some View {
+        let progress = min(max(userViewModel.profile.handicap / 36.0, 0.1), 1.0)
+        
+        return ZStack(alignment: .bottom) {
+            // Background Track Arc
+            Circle()
+                .trim(from: 0.5, to: 1.0)
+                .stroke(
+                    Color(hex: "#161922"),
+                    style: StrokeStyle(lineWidth: 9, lineCap: .round)
+                )
+                .frame(width: 124, height: 124)
+            
+            // Gradient Stroke Royal Purple to Luminous Magenta (#7928CA to #FF0080)
+            Circle()
+                .trim(from: 0.5, to: 0.5 + (0.5 * progress))
+                .stroke(
+                    LinearGradient(
+                        colors: [Color(hex: "#7928CA"), Color(hex: "#FF0080")],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    ),
+                    style: StrokeStyle(lineWidth: 9, lineCap: .round)
+                )
+                .frame(width: 124, height: 124)
+                .shadow(color: Color(hex: "#FF0080").opacity(0.3), radius: 4)
+            
+            // Center Readout
+            VStack(spacing: 0) {
+                Text(String(format: "%.1f", userViewModel.profile.handicap))
+                    .font(.system(size: 24, weight: .bold, design: .default))
+                    .foregroundStyle(Color.white)
+                
+                Text("HCP")
+                    .font(.system(size: 11, weight: .bold, design: .default))
+                    .foregroundStyle(Color(hex: "#C42582"))
+                    .hudTracking(1.2)
+            }
+            .padding(.bottom, 10)
+        }
+        .frame(width: 124, height: 62, alignment: .bottom)
+        .clipped()
+    }
+    
+    // MARK: - Stat Pod Helper
+    
+    private func statPod(title: String, value: String, accentColor: Color) -> some View {
+        VStack(alignment: .trailing, spacing: 2) {
+            HStack(spacing: 5) {
+                Circle()
+                    .fill(accentColor)
+                    .frame(width: 5, height: 5)
+                
+                Text(title)
+                    .font(.system(size: 11, weight: .medium, design: .default))
+                    .foregroundStyle(Color(hex: "#8F9AA9"))
+                    .hudTracking(0.5)
+            }
+            
+            Text(value)
+                .font(.system(size: 16, weight: .bold, design: .default))
+                .foregroundStyle(accentColor)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(Color(hex: "#262B3A"))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .stroke(Color.white.opacity(0.06), lineWidth: 1.0)
+        )
+    }
+    
+    // MARK: - Match History Combat Log Container
+    
+    private var matchHistoryContainer: some View {
+        VStack(spacing: 0) {
+            // Section Header
+            HStack {
+                HStack(spacing: 6) {
+                    TacticalCrosshair(size: 8)
+                        .stroke(Color(hex: "#00F0FF"), lineWidth: 1.2)
+                        .frame(width: 8, height: 8)
+                    
+                    Text("MATCH HISTORY")
+                        .font(.system(size: 16, weight: .bold, design: .default))
+                        .foregroundStyle(Color.white)
+                        .hudTracking(1.0)
+                }
+                
+                Spacer()
+                
+                Text("View All")
+                    .font(.system(size: 12, weight: .semibold, design: .default))
+                    .foregroundStyle(Color(hex: "#00F0FF"))
+                    .hudTracking(0.8)
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 20)
+            .padding(.bottom, 12)
+            
+            // Matches Timeline
+            VStack(spacing: 0) {
+                ForEach(viewModel.matchHistory, id: \.id) { match in
+                    matchRow(match: match)
+                    
+                    if match.id != viewModel.matchHistory.last?.id {
+                        Rectangle()
+                            .fill(Color.white.opacity(0.06))
+                            .frame(height: 1)
+                            .padding(.horizontal, 16)
+                    }
+                }
+            }
+            .padding(.bottom, 12)
+        }
+        .background(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(Color(hex: "#202430"))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .stroke(Color.white.opacity(0.08), lineWidth: 1.0)
+        )
+        .padding(.horizontal, 24)
+    }
+    
+    // MARK: - Match Row Component
+    
+    private func matchRow(match: MatchHistoryItem) -> some View {
+        let isPositiveDelta = match.hcpAffect <= 0
+        let deltaColor = isPositiveDelta ? Color(hex: "#2CE5A5") : Color(hex: "#EF4444")
+        
+        return VStack(spacing: 8) {
+            // Date Header
+            HStack {
+                Text(match.date.uppercased())
+                    .font(.system(size: 11, weight: .semibold, design: .default))
+                    .foregroundStyle(Color(hex: "#7E8799"))
+                    .hudTracking(0.8)
+                Spacer()
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 12)
+            
+            // Match Content Row
+            HStack(spacing: 14) {
+                // Course Info & Score
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(match.course.uppercased())
+                        .font(.system(size: 15, weight: .bold, design: .default))
+                        .foregroundStyle(Color.white)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                    
+                    HStack(spacing: 8) {
+                        Text("\(match.score)")
+                            .font(.system(size: 15, weight: .bold, design: .default))
+                            .foregroundStyle(Color.white)
+                        
+                        // Delta Pill
+                        Text(String(format: "%+0.1f", match.hcpAffect))
+                            .font(.system(size: 11, weight: .semibold, design: .default))
+                            .foregroundStyle(deltaColor)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(deltaColor.opacity(0.12))
+                            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                    .stroke(deltaColor.opacity(0.35), lineWidth: 1.0)
+                            )
+                    }
+                }
+                
+                Spacer(minLength: 12)
+                
+                // Statlines (B/P/+1/+2/DP)
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text("B/P/+1/+2/DP")
+                        .font(.system(size: 9, weight: .medium, design: .default))
+                        .foregroundStyle(Color(hex: "#8E97A6"))
+                        .hudTracking(0.8)
+                    
+                    Text("\(match.birdies)/\(match.pars)/\(match.bogeys)/\(match.doubleBogeys)/\(match.doublePars)")
+                        .font(.system(size: 13, weight: .semibold, design: .default))
+                        .foregroundStyle(Color(hex: "#F8FAFC").opacity(0.9))
+                }
+                
+                // Minimal 3px vertical accent bar without glowing shadow
+                RoundedRectangle(cornerRadius: 1.5, style: .continuous)
+                    .fill(deltaColor)
+                    .frame(width: 3, height: 44)
+                    .padding(.leading, 4)
+            }
+            .padding(.horizontal, 20)
+            .padding(.bottom, 12)
         }
     }
 }
+
+// MARK: - MetricItem Component
 
 struct MetricItem: View {
     let title: String
     let value: String
     let color: Color
-    let textBeige: Color
+    var textBeige: Color = NeoFuturisticTheme.textSecondary
     
     var body: some View {
         VStack(spacing: 4) {
             Text(value)
-                .font(.system(.title3, design: .monospaced).bold())
-                .foregroundColor(color)
+                .font(.system(size: 18, weight: .bold, design: .default))
+                .foregroundStyle(color)
+            
             Text(title)
-                .font(.system(.caption2, design: .monospaced))
-                .foregroundColor(textBeige.opacity(0.5))
+                .font(.system(size: 11, weight: .medium, design: .default))
+                .foregroundStyle(Color(hex: "#8B949E"))
+                .hudTracking(0.8)
         }
     }
 }
 
+// MARK: - Preview
+
 #Preview {
     LeaderboardView()
+        .environment(UserViewModel())
 }

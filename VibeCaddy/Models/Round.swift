@@ -5,7 +5,6 @@ import SwiftData
 final class Round {
     var id: UUID
     var date: Date
-    var player: Player?
     var course: Course?
     
     @Relationship(deleteRule: .cascade, inverse: \Shot.round)

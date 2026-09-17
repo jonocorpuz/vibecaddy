@@ -1,0 +1,8 @@
+.DS_Store
+build/
+.derivedData/
+.derivedData_survey/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcuserdatad
+.agents/
